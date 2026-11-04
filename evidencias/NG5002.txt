@@ -1,0 +1,24 @@
+Evidencia NG5002 — bloque @if sin cerrar
+Comando: npm run build
+Código de salida: 1
+
+Salida del compilador:
+
+> gimnasio-admin@0.0.0 build
+> ng build
+
+> Building...
+√ Building...
+Application bundle generation failed. [2.600 seconds] - 2026-11-04T23:05:02.201Z
+
+X [ERROR] NG5002: Unclosed block "if" [plugin angular-compiler]
+
+    gimnasio-admin/src/app/tarjeta-clase/tarjeta-clase.html:23:0:
+      23 │ @if (true) {
+         ╵ ~~~~~~~~~~~~
+
+  Error occurs in the template of component TarjetaClase.
+
+    gimnasio-admin/src/app/tarjeta-clase/tarjeta-clase.ts:7:15:
+      7 │   templateUrl: './tarjeta-clase.html',
+        ╵                ~~~~~~~~~~~~~~~~~~~~~~

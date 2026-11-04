@@ -1,0 +1,33 @@
+Evidencia NG8001 — selector de componente desconocido
+Comando: npm run build
+Código de salida: 1
+
+Salida del compilador:
+
+> gimnasio-admin@0.0.0 build
+> ng build
+
+> Building...
+√ Building...
+Application bundle generation failed. [2.554 seconds] - 2026-11-04T23:05:15.917Z
+
+▲ [WARNING] NG8113: All imports are unused [plugin angular-compiler]
+
+    gimnasio-admin/src/app/app.ts:8:2:
+      8 │   imports: [TarjetaClase],
+        ╵   ~~~~~~~
+
+
+X [ERROR] NG8001: 'app-clase-inexistente' is not a known element:
+1. If 'app-clase-inexistente' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-clase-inexistente' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message. Find more at https://next.angular.dev/errors/NG8001 [plugin angular-compiler]
+
+    gimnasio-admin/src/app/app.html:64:8:
+      64 │         <app-clase-inexistente></app-clase-inexistente>
+         ╵         ~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component App.
+
+    gimnasio-admin/src/app/app.ts:9:15:
+      9 │   templateUrl: './app.html',
+        ╵                ~~~~~~~~~~~~

@@ -1,0 +1,70 @@
+<header class="barra">
+  <div class="barra__interior">
+    <a class="barra__marca" href="/" aria-label="Gimnasio Titanes, inicio">
+      <img src="/logo.svg" alt="" />
+      Gimnasio Titanes
+    </a>
+    <span class="barra__etiqueta">Administración</span>
+  </div>
+</header>
+
+<main class="pagina">
+  <section aria-labelledby="titulo-tablero">
+    <div class="encabezado">
+      <div>
+        <h1 id="titulo-tablero">Tablero de clases</h1>
+        <p>Resumen semanal del catálogo de Gimnasio Titanes.</p>
+      </div>
+    </div>
+
+    <div class="resumen" aria-label="Resumen semanal">
+      <div class="resumen__dato">
+        <span class="resumen__numero">{{ totalClases() }}</span>
+        <span class="resumen__texto">Clases en el catálogo</span>
+      </div>
+      <div class="resumen__dato">
+        <span class="resumen__numero">{{ minutosSemanales() }}</span>
+        <span class="resumen__texto">Minutos a la semana</span>
+      </div>
+      <div class="resumen__dato">
+        <span class="resumen__numero">{{ clasesLargas() }}</span>
+        <span class="resumen__texto">Clases de una hora o más</span>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="titulo-catalogo">
+    <div class="encabezado">
+      <div>
+        <h2 id="titulo-catalogo">Catálogo de clases</h2>
+        <p>Consulta la categoría, duración y descripción de cada sesión.</p>
+      </div>
+      <div class="acciones" aria-label="Acciones del catálogo">
+        <button
+          class="boton boton--secundario"
+          type="button"
+          (click)="vaciarCatalogo()"
+          [disabled]="totalClases() === 0"
+        >
+          Vaciar catálogo
+        </button>
+        <button
+          class="boton"
+          type="button"
+          (click)="restaurarCatalogo()"
+          [disabled]="totalClases() === catalogoCompleto.length"
+        >
+          Restaurar catálogo
+        </button>
+      </div>
+    </div>
+
+    <div class="rejilla" aria-label="Clases disponibles">
+      @for (clase of clases(); track clase.id) {
+        <app-tarjeta-clase [clase]="clase"></app-tarjeta-clase>
+      } @empty {
+        <p class="vacio" role="status">No hay clases en el catálogo. Restaura el catálogo para volver a verlas.</p>
+      }
+    </div>
+  </section>
+</main>

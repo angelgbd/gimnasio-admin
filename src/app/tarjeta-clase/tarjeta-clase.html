@@ -1,0 +1,21 @@
+<article class="tarjeta-clase">
+  <img src="/img/clase-01.jpg" [src]="clase().imagen" [alt]="clase().nombre" loading="lazy" />
+  <div class="tarjeta-clase__cuerpo">
+    <h3 class="tarjeta-clase__nombre">{{ clase().nombre }}</h3>
+    <p>{{ clase().descripcion }}</p>
+    <div class="tarjeta-clase__pie">
+      <span class="etiqueta etiqueta--min">{{ clase().duracionMin }} minutos</span>
+      <span
+        class="etiqueta"
+        [class.etiqueta--fuerza]="clase().categoria === 'fuerza'"
+        [class.etiqueta--cardio]="clase().categoria === 'cardio'"
+        [class.etiqueta--flexibilidad]="clase().categoria === 'flexibilidad'"
+      >
+        {{ clase().categoria }}
+      </span>
+      @if (clase().duracionMin >= 60) {
+        <span class="etiqueta etiqueta--larga">Larga</span>
+      }
+    </div>
+  </div>
+</article>
