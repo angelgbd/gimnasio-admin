@@ -1,6 +1,6 @@
-# Gimnasio Admin
+# Gimnasio Admin — Práctica 20
 
-Práctica 19: tablero de clases hecho con Angular y el catálogo local del gimnasio.
+Continuación del tablero de clases de la Práctica 19. Esta rama mueve el estado del catálogo a un servicio compartido con signals.
 
 ## Ejecutar
 
@@ -17,14 +17,26 @@ La aplicación se sirve en `http://localhost:4200`. Para generar la compilación
 npm run build
 ```
 
-## Tablero
+## Tablero y catálogo
 
-- El resumen calcula el total de clases, los minutos semanales y cuántas clases duran 60 minutos o más.
-- Cada tarjeta muestra la imagen, el nombre, la descripción, la categoría y la duración de su clase.
+- `Catalogo` es la fuente compartida para las clases, la categoría activa y la clase seleccionada.
+- El filtro y el tablero obtienen la misma instancia del servicio con `inject(Catalogo)`.
+- `computed()` calcula las clases visibles, sus minutos totales y cuántas duran 60 minutos o más.
+- Cada tarjeta muestra la imagen, el nombre, la descripción, la categoría y la duración; su selección se envía al padre con `output()`.
+- El panel lateral muestra el detalle de la clase seleccionada. Si el filtro la oculta, se limpia la selección.
 - La etiqueta «Larga» aparece desde los 60 minutos.
 - «Vaciar catálogo» muestra el estado vacío; «Restaurar catálogo» repone las ocho clases locales.
 
-Con el catálogo completo, el resumen muestra 8 clases, 380 minutos semanales y 2 clases largas.
+Con «Todas» y el catálogo completo, el resumen muestra 8 clases, 380 minutos semanales y 2 clases largas.
+
+## Respuestas de la Práctica 20
+
+- **¿Qué diferencia hay entre un signal y un computed?** Un signal contiene estado que puede cambiar; un computed deriva un valor de otros signals y se recalcula cuando cambian sus dependencias. Como analogía aproximada, `signal()` se parece a `useState` y `computed()` a `useMemo`, aunque Angular administra dependencias y actualizaciones de manera distinta.
+- **¿Qué pasa si el filtro hace `new Catalogo()` en lugar de `inject(Catalogo)`?** Crearía una instancia independiente fuera del inyector de Angular. El filtro tendría estado distinto al tablero y no compartirían selección ni categoría.
+
+## Aviso capturado
+
+`evidencias/NG8109.txt` contiene la salida de `ng build` al dejar sin paréntesis una lectura de signal en la plantilla. La lectura se corrigió antes de terminar el trabajo.
 
 ## Preguntas del ejercicio
 
@@ -43,4 +55,4 @@ Los archivos de `evidencias/` guardan la salida real de `ng build` al provocar c
 
 ## Estructura solicitada
 
-El proyecto se creó con `ng new gimnasio-admin --skip-tests --routing=false --ssr=false`. El componente `tarjeta-clase` se generó con Angular CLI. No se incluyeron pruebas ni configuración de rutas.
+El proyecto se creó con `ng new gimnasio-admin --skip-tests --routing=false --ssr=false`. `tarjeta-clase`, el servicio `Catalogo` y `filtro-categoria` se generaron con Angular CLI. No se incluyeron pruebas ni configuración de rutas.

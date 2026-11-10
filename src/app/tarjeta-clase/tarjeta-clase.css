@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.tarjeta-clase {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+}

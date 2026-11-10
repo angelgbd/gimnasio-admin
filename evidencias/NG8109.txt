@@ -1,0 +1,46 @@
+Aviso NG8109 — lectura de signal sin paréntesis
+Comando: npm run build
+Código de salida: 0
+
+Salida del compilador:
+
+> gimnasio-admin@0.0.0 build
+> ng build
+
+> Building...
+√ Building...
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-2QJ6N26B.js    | main          | 126.14 kB |                38.04 kB
+styles-FAWXZ6ZX.css | styles        |   8.72 kB |                 2.17 kB
+
+                    | Initial total | 134.86 kB |                40.21 kB
+
+Application bundle generation complete. [4.076 seconds] - 2026-11-10T00:57:09.714Z
+
+▲ [WARNING] NG8109: NG8109: minutosTotales is a function and should be invoked: minutosTotales()}. Find more at https://v22.angular.dev/extended-diagnostics/NG8109 [plugin angular-compiler]
+
+    src/app/app.html:26:50:
+      26 │ ...<span class="resumen__numero">{{ catalogo.minutosTotales }}</span>
+         ╵                                              ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component App.
+
+    src/app/app.ts:9:15:
+      9 │   templateUrl: './app.html',
+        ╵                ~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8117: NG8117: Function in text interpolation should be invoked: minutosTotales(). Find more at https://v22.angular.dev/extended-diagnostics/NG8117 [plugin angular-compiler]
+
+    src/app/app.html:26:50:
+      26 │ ...<span class="resumen__numero">{{ catalogo.minutosTotales }}</span>
+         ╵                                              ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component App.
+
+    src/app/app.ts:9:15:
+      9 │   templateUrl: './app.html',
+        ╵                ~~~~~~~~~~~~
+
+
+Output location: dist\gimnasio-admin

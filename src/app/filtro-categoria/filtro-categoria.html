@@ -1,0 +1,20 @@
+<nav class="filtro" aria-label="Filtrar clases por categoría">
+  <button
+    type="button"
+    [class.activo]="catalogo.categoriaSeleccionada() === null"
+    [attr.aria-pressed]="catalogo.categoriaSeleccionada() === null"
+    (click)="elegir(null)"
+  >
+    Todas
+  </button>
+  @for (categoria of categorias; track categoria) {
+    <button
+      type="button"
+      [class.activo]="catalogo.categoriaSeleccionada() === categoria"
+      [attr.aria-pressed]="catalogo.categoriaSeleccionada() === categoria"
+      (click)="elegir(categoria)"
+    >
+      {{ categoria.charAt(0).toUpperCase() + categoria.slice(1) }}
+    </button>
+  }
+</nav>

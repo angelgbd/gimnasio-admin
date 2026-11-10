@@ -13,58 +13,97 @@
     <div class="encabezado">
       <div>
         <h1 id="titulo-tablero">Tablero de clases</h1>
-        <p>Resumen semanal del catálogo de Gimnasio Titanes.</p>
+        <p>Filtra el catálogo y consulta el detalle de cada sesión.</p>
       </div>
     </div>
 
-    <div class="resumen" aria-label="Resumen semanal">
+    <div class="resumen" aria-label="Resumen de las clases visibles">
       <div class="resumen__dato">
-        <span class="resumen__numero">{{ totalClases() }}</span>
-        <span class="resumen__texto">Clases en el catálogo</span>
+        <span class="resumen__numero">{{ catalogo.totalClasesVisibles() }}</span>
+        <span class="resumen__texto">Clases visibles</span>
       </div>
       <div class="resumen__dato">
-        <span class="resumen__numero">{{ minutosSemanales() }}</span>
+        <span class="resumen__numero">{{ catalogo.minutosTotales() }}</span>
         <span class="resumen__texto">Minutos a la semana</span>
       </div>
       <div class="resumen__dato">
-        <span class="resumen__numero">{{ clasesLargas() }}</span>
+        <span class="resumen__numero">{{ catalogo.clasesLargas() }}</span>
         <span class="resumen__texto">Clases de una hora o más</span>
       </div>
     </div>
   </section>
 
-  <section aria-labelledby="titulo-catalogo">
-    <div class="encabezado">
-      <div>
-        <h2 id="titulo-catalogo">Catálogo de clases</h2>
-        <p>Consulta la categoría, duración y descripción de cada sesión.</p>
-      </div>
-      <div class="acciones" aria-label="Acciones del catálogo">
-        <button
-          class="boton boton--secundario"
-          type="button"
-          (click)="vaciarCatalogo()"
-          [disabled]="totalClases() === 0"
-        >
-          Vaciar catálogo
-        </button>
-        <button
-          class="boton"
-          type="button"
-          (click)="restaurarCatalogo()"
-          [disabled]="totalClases() === catalogoCompleto.length"
-        >
-          Restaurar catálogo
-        </button>
-      </div>
+  <div class="tablero">
+    <div>
+      <section aria-labelledby="titulo-catalogo">
+        <div class="encabezado">
+          <div>
+            <h2 id="titulo-catalogo">Catálogo de clases</h2>
+            <p>Elige una categoría para filtrar las sesiones.</p>
+          </div>
+          <div class="acciones" aria-label="Acciones del catálogo">
+            <button
+              class="boton boton--secundario"
+              type="button"
+              (click)="catalogo.vaciarCatalogo()"
+              [disabled]="catalogo.clases().length === 0"
+            >
+              Vaciar catálogo
+            </button>
+            <button
+              class="boton"
+              type="button"
+              (click)="catalogo.restaurarCatalogo()"
+              [disabled]="catalogo.clases().length === catalogo.catalogoCompleto.length"
+            >
+              Restaurar catálogo
+            </button>
+          </div>
+        </div>
+
+        <app-filtro-categoria></app-filtro-categoria>
+
+        <div class="rejilla" aria-label="Clases disponibles">
+          @for (clase of catalogo.clasesVisibles(); track clase.id) {
+            <app-tarjeta-clase
+              [clase]="clase"
+              [activa]="catalogo.claseSeleccionada()?.id === clase.id"
+              (seleccionada)="catalogo.seleccionarClase($event)"
+            ></app-tarjeta-clase>
+          } @empty {
+            <p class="vacio" role="status">
+              No hay clases para mostrar. Restaura el catálogo para volver a verlas.
+            </p>
+          }
+        </div>
+      </section>
     </div>
 
-    <div class="rejilla" aria-label="Clases disponibles">
-      @for (clase of clases(); track clase.id) {
-        <app-tarjeta-clase [clase]="clase"></app-tarjeta-clase>
-      } @empty {
-        <p class="vacio" role="status">No hay clases en el catálogo. Restaura el catálogo para volver a verlas.</p>
+    <aside class="lateral" aria-label="Detalle de clase">
+      @if (catalogo.claseSeleccionada(); as clase) {
+        <article class="tarjeta">
+          <img src="/img/clase-01.jpg" [src]="clase.imagen" [alt]="clase.nombre" />
+          <h2>{{ clase.nombre }}</h2>
+          <p>{{ clase.descripcion }}</p>
+          <p class="dato">
+            <span class="dato__clave">Categoría</span>
+            <span class="dato__valor">{{ clase.categoria }}</span>
+          </p>
+          <p class="dato">
+            <span class="dato__clave">Duración</span>
+            <span class="dato__valor">{{ clase.duracionMin }} minutos</span>
+          </p>
+          <button
+            class="boton boton--secundario boton--chico"
+            type="button"
+            (click)="catalogo.seleccionarClase(null)"
+          >
+            Quitar selección
+          </button>
+        </article>
+      } @else {
+        <p class="vacio" role="status">Selecciona una tarjeta para ver el detalle de la clase.</p>
       }
-    </div>
-  </section>
+    </aside>
+  </div>
 </main>

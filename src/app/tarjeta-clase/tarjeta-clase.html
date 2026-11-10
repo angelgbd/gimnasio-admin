@@ -1,5 +1,11 @@
-<article class="tarjeta-clase">
-  <img src="/img/clase-01.jpg" [src]="clase().imagen" [alt]="clase().nombre" loading="lazy" />
+<button
+  class="tarjeta-clase"
+  [class.tarjeta-clase--activa]="activa()"
+  [attr.aria-pressed]="activa()"
+  type="button"
+  (click)="seleccionar()"
+>
+  <img src="/img/clase-01.jpg" [src]="clase().imagen" alt="" loading="lazy" />
   <div class="tarjeta-clase__cuerpo">
     <h3 class="tarjeta-clase__nombre">{{ clase().nombre }}</h3>
     <p>{{ clase().descripcion }}</p>
@@ -18,4 +24,4 @@
       }
     </div>
   </div>
-</article>
+</button>
