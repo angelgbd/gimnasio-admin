@@ -1,11 +1,14 @@
+import { httpResource } from '@angular/common/http';
 import { computed, Service, signal } from '@angular/core';
-import { CLASES_LOCALES } from '../datos/clases-locales';
-import type { Categoria, Clase } from '../modelos/clase';
+import { API_URL } from '../config';
+import type { Categoria, Clase, Sobre } from '../modelos/clase';
 
 @Service()
 export class Catalogo {
-  readonly catalogoCompleto = CLASES_LOCALES;
-  readonly clases = signal<Clase[]>([...CLASES_LOCALES]);
+  readonly recursoClases = httpResource<Sobre<Clase[]>>(() => `${API_URL}/clases`);
+  readonly clases = computed(() =>
+    this.recursoClases.hasValue() ? this.recursoClases.value().data : [],
+  );
   readonly categoriaSeleccionada = signal<Categoria | null>(null);
   readonly claseSeleccionada = signal<Clase | null>(null);
 
@@ -31,15 +34,6 @@ export class Catalogo {
 
   seleccionarClase(clase: Clase | null): void {
     this.claseSeleccionada.set(clase);
-  }
-
-  vaciarCatalogo(): void {
-    this.clases.set([]);
-    this.claseSeleccionada.set(null);
-  }
-
-  restaurarCatalogo(): void {
-    this.clases.set([...CLASES_LOCALES]);
   }
 
   private soltarSeleccionSiNoEsVisible(): void {

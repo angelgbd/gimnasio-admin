@@ -1,0 +1,84 @@
+<main class="pagina">
+  <div class="encabezado">
+    <div>
+      <h1>Nueva clase</h1>
+      <p>Completa los datos. Al guardar se mostrará el objeto para la API.</p>
+    </div>
+    <a class="boton boton--secundario" routerLink="/clases">Volver al catálogo</a>
+  </div>
+
+  <form class="formulario tarjeta" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    <div class="campo">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" type="text" formControlName="nombre" maxlength="80" />
+      @if (formulario.controls.nombre.touched && formulario.controls.nombre.hasError('required')) {
+        <span class="error">El nombre es obligatorio.</span>
+      }
+      @if (formulario.controls.nombre.touched && formulario.controls.nombre.hasError('maxlength')) {
+        <span class="error">El nombre admite hasta 80 caracteres.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" formControlName="categoria">
+        <option value="">Selecciona una categoría</option>
+        @for (categoria of categorias; track categoria) {
+          <option [value]="categoria">{{ categoria }}</option>
+        }
+      </select>
+      @if (formulario.controls.categoria.touched && formulario.controls.categoria.hasError('required')) {
+        <span class="error">Selecciona una categoría.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" rows="4" formControlName="descripcion" maxlength="255"></textarea>
+      @if (formulario.controls.descripcion.touched && formulario.controls.descripcion.hasError('required')) {
+        <span class="error">La descripción es obligatoria.</span>
+      }
+      @if (formulario.controls.descripcion.touched && formulario.controls.descripcion.hasError('maxlength')) {
+        <span class="error">La descripción admite hasta 255 caracteres.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="duracionMin">Duración (minutos)</label>
+      <input id="duracionMin" type="number" min="10" step="5" formControlName="duracionMin" />
+      @if (formulario.controls.duracionMin.touched && formulario.controls.duracionMin.hasError('required')) {
+        <span class="error">La duración es obligatoria.</span>
+      }
+      @if (formulario.controls.duracionMin.touched && formulario.controls.duracionMin.hasError('min')) {
+        <span class="error">La duración mínima es de 10 minutos.</span>
+      }
+      @if (formulario.controls.duracionMin.touched && formulario.controls.duracionMin.hasError('multiploDeCinco')) {
+        <span class="error">La duración debe avanzar en bloques de 5 minutos.</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="imagen">Imagen (URL o ruta /img/...)</label>
+      <input id="imagen" type="text" formControlName="imagen" maxlength="120" />
+      @if (formulario.controls.imagen.touched && formulario.controls.imagen.hasError('required')) {
+        <span class="error">La imagen es obligatoria.</span>
+      }
+      @if (formulario.controls.imagen.touched && formulario.controls.imagen.hasError('maxlength')) {
+        <span class="error">La ruta admite hasta 120 caracteres.</span>
+      }
+      @if (formulario.controls.imagen.touched && formulario.controls.imagen.hasError('pattern')) {
+        <span class="error">Usa una URL http(s) o una ruta local que empiece con /img/.</span>
+      }
+    </div>
+
+    <button class="boton" type="submit">Guardar y mostrar objeto</button>
+  </form>
+
+  @if (resultado(); as clase) {
+    <section class="tarjeta" aria-live="polite" aria-labelledby="titulo-objeto">
+      <h2 id="titulo-objeto">Objeto listo para enviar</h2>
+      <p>No se realizó ninguna petición a la API.</p>
+      <pre>{{ clase | json }}</pre>
+    </section>
+  }
+</main>

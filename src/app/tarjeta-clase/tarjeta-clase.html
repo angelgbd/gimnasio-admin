@@ -5,7 +5,7 @@
   type="button"
   (click)="seleccionar()"
 >
-  <img src="/img/clase-01.jpg" [src]="clase().imagen" alt="" loading="lazy" />
+  <img [src]="imagenUrl()" [alt]="clase().nombre" loading="lazy" />
   <div class="tarjeta-clase__cuerpo">
     <h3 class="tarjeta-clase__nombre">{{ clase().nombre }}</h3>
     <p>{{ clase().descripcion }}</p>
