@@ -27,6 +27,10 @@ export class Catalogo {
     () => this.clasesVisibles().filter((clase) => clase.duracionMin >= 60).length,
   );
 
+  recargar(): void {
+    this.recursoClases.reload();
+  }
+
   seleccionarCategoria(categoria: Categoria | null): void {
     this.categoriaSeleccionada.set(categoria);
     this.soltarSeleccionSiNoEsVisible();

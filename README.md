@@ -1,53 +1,62 @@
-# Gimnasio Admin — Práctica 21
+# Gimnasio Admin — Práctica 22
 
-Continuación de las Prácticas 19 y 20. El panel ya usa el router de Angular, el catálogo viene de `gimnasio-backend` y el formulario de alta prepara los datos sin enviar un `POST`.
+Continuación de las Prácticas 19 a 21. El panel usa una sesión de administrador, agrega el token a las peticiones y guarda, edita y elimina clases con la API.
 
 ## Ejecutar
 
+### API
+
+En `gimnasio-backend`, instala dependencias, configura `.env` con la contraseña local de MySQL y ejecuta las migraciones, generación de Prisma y seed según [`gimnasio-backend/README.md`](gimnasio-backend/README.md). El seed crea estas cuentas:
+
+- Administrador: `admin@itson.mx` / `gimnasio2026`
+- Miembro: `karla@itson.mx` / `gimnasio2026`
+
+Inicia la API con `npm run start:dev` en el puerto 3000.
+
 ### Frontend
+
+Desde la raíz:
 
 ```bash
 npm ci
 npm start
 ```
 
-Abre `http://localhost:4200`. La ruta vacía redirige a `/clases`; `/horarios` y `/miembros` son páginas de muestra.
+Abre `http://localhost:4200` y entra con la cuenta de administrador. La cuenta de Karla sirve para comprobar que el panel rechaza miembros.
 
-### API
+Si el puerto 4200 está ocupado, inicia con `npm start -- --port 4201` y agrega `FRONTEND_URL="http://localhost:4201"` al `.env` local del backend para CORS.
 
-En otra terminal, sigue los requisitos e instrucciones de [`gimnasio-backend/README.md`](gimnasio-backend/README.md). La API requiere Node y MySQL; configura `.env`, prepara Prisma y ejecuta `npm run start:dev` desde `gimnasio-backend`. El catálogo responde en `http://localhost:3000/clases` y las imágenes en `http://localhost:3000/img/`.
+## Sesión y rutas
 
-La aplicación Angular de esta práctica no tiene login. `GET /clases` es público; las rutas de escritura del backend siguen protegidas por rol.
+- `src/app/sesion/sesion.ts` guarda token y usuario como estado reactivo.
+- `src/app/sesion/interceptores.ts` agrega `Authorization: Bearer …` a cada petición de `HttpClient`; una respuesta 401 cierra la sesión y redirige al login.
+- `src/app/sesion/solo-admin.ts` protege el panel y sus rutas hijas. La API mantiene su propia autorización con `@Roles(Rol.admin)`.
+- `src/app/app.routes.ts` deja `/login` fuera del panel. Las páginas de clases, horarios y miembros son rutas hijas protegidas. El formulario se carga con `loadComponent` en `/clases/nueva` y `/clases/:id/editar`.
+- `src/app/app.html` sólo contiene el `router-outlet`; el marco y la navegación viven en el panel.
 
-## Rutas y páginas
+## Guardar y administrar clases
 
-- `/clases`: tablero de la Práctica 20 trasladado a `ListaClases`, con resumen, filtro, tarjetas y detalle lateral.
-- `/clases/nueva`: formulario reactivo que muestra el objeto listo para la API cuando el formulario es válido. No realiza ninguna petición.
-- `/horarios` y `/miembros`: páginas iniciales con «Hola mundo».
-- `src/app/app.routes.ts` registra las páginas, redirige `''` a `clases` con `pathMatch: 'full'` y deja `**` al final.
-- `src/app/app.html` conserva la barra de navegación y coloca el contenido de la página en `router-outlet`.
+`ClasesApi` usa `HttpClient` para crear, obtener, actualizar y eliminar. El formulario único toma `id` de la URL: sin id manda `POST /clases`; con id carga los datos con `patchValue` y manda `PATCH /clases/:id`. Al terminar recarga el catálogo y vuelve a `/clases`. La eliminación pide confirmación.
 
-## Catálogo remoto
+Los validadores del navegador dan respuesta inmediata; si el backend responde 400, la página muestra los mensajes que llegaron en `message`. Mientras se guarda, se deshabilitan las acciones. `canDeactivate` pregunta antes de salir del formulario sucio; la navegación a login también pasa por esa guarda.
 
-`Catalogo` obtiene `GET /clases` con `httpResource` y lee `data` del sobre de la API. El mismo servicio conserva las signals de categoría y selección, y calcula las clases visibles, los minutos y las clases largas con `computed`. La página presenta los estados de carga y error. Las rutas de imagen relativas se completan con `API_URL` (`src/config.ts`).
+### Demostración de las validaciones del servidor
 
-Se copió `src/servicios/errores.ts` del código base para explicar errores HTTP. Se eliminó `src/datos/` porque el frontend ya no usa el catálogo local.
+Para observar la validación del backend, quita temporalmente `Validators.required` del nombre y `Validators.min(10)` junto con `multiploDeCincoValidator` de la duración en `formulario-clase.ts`. Envía nombre vacío y duración `5`: deben aparecer los mensajes 400 del servidor. Después vuelve a poner los validadores antes de guardar los cambios finales.
 
-## Respuestas de la Práctica 21
+Para demostrar el límite de autorización, cambia temporalmente `@Roles(Rol.admin)` por `@Publico()` en el método `crear()` de `gimnasio-backend/src/clases/clases.controller.ts`, crea una clase desde el formulario y vuelve a poner `@Roles(Rol.admin)`. Un `POST /clases` sin token debe responder 401. No dejes la ruta pública al terminar.
 
-- **¿Qué pieza de React Router corresponde a `router-outlet`, `routerLink` y `routerLinkActive`?** `router-outlet` se parece a `<Outlet />`: reserva el lugar donde se dibuja la ruta activa. `routerLink` cumple el papel de `<Link to="...">` para navegar sin recargar la página. `routerLinkActive` se parece a la lógica de `<NavLink>` que marca el enlace de la ruta activa.
-- **¿Por qué `**` va al final y la ruta vacía necesita `pathMatch: 'full'`?** Angular prueba las rutas en orden y se queda con la primera coincidencia; el comodín debe quedar después de todas las rutas concretas para no capturarlas. La ruta vacía usa `full` para redirigir sólo cuando la URL está vacía, no cuando cualquier ruta empieza con un prefijo vacío.
-- **¿Dónde vive el valor de un campo reactivo y cómo se diferencia de `useState`?** Vive en su `FormControl`, agrupado en el `FormGroup`; Angular sincroniza el modelo con el elemento y también mantiene validez, estado tocado y cambios. `useState` guarda estado del componente React mediante su setter, pero no crea por sí mismo un árbol de controles con esas reglas de formulario.
-- **¿Qué devuelve el validador propio y cómo se relaciona con `hasError`?** Devuelve `null` si la duración cumple la regla; si no, devuelve un mapa de error con la clave `multiploDeCinco`. `hasError('multiploDeCinco')` consulta esa clave para decidir si mostrar el mensaje.
-- **¿Qué cambió en el servicio del catálogo y por qué ningún componente se enteró?** Las clases pasaron de un arreglo local a la respuesta reactiva de `httpResource`, que hace `GET /clases`. Se mantuvieron el servicio compartido, los nombres de sus señales y los valores computados que leen los componentes; por eso tablero, filtro y tarjetas siguen consumiendo la misma interfaz.
-- **¿Por qué no hizo falta iniciar sesión para leer el catálogo?** El controlador del backend marca `GET /clases` como público con `@Publico()`. Esto permite leer sin token; las operaciones de escritura continúan protegidas.
+## Respuestas de la Práctica 22
 
-## Respuestas conservadas de la Práctica 20
+- **Si el formulario ya valida, ¿por qué también valida el servidor?** El cliente se puede omitir o modificar: alguien puede llamar la API directamente, cambiar el navegador o enviar otra petición. El servidor es la frontera que protege los datos y debe validar aunque la interfaz ya lo haya hecho.
+- **¿Por qué `httpResource` para leer y `HttpClient` para crear, editar y eliminar?** `httpResource` modela una lectura reactiva y expone valor, carga y error; no es para mutaciones. `HttpClient` permite iniciar cada POST, PATCH o DELETE por una acción concreta. ([Angular: `httpResource`](https://angular.dev/guide/http/http-resource))
+- **¿Qué pasa si se olvida `subscribe()`?** El Observable de `HttpClient` es perezoso: sin suscripción no envía la petición ni ejecuta sus callbacks.
+- **¿A qué piezas de React corresponden rutas hijas, interceptor y guardia?** Las rutas hijas se parecen a rutas anidadas con `<Outlet />`; el interceptor, a un interceptor de Axios o middleware de `fetch`; el guardia, a una ruta protegida que decide si renderiza o redirige.
+- **¿Cuándo se ejecuta el guardia y por qué `salir()` debe navegar al login?** `canActivate` y `canActivateChild` corren durante la navegación, antes de activar la ruta. Borrar el token sólo cambia el estado de sesión: navegar a `/login` también cambia la ruta y evita que quede visible el panel.
+- **¿Cómo decide el formulario entre POST y PATCH?** La ruta nueva no trae `id` y usa POST; la ruta de edición enlaza `:id` con el input del componente y usa PATCH.
+- **¿Por qué no observar el estado del formulario con `computed()`?** `FormGroup.dirty` y los demás estados de Reactive Forms no son signals; `computed()` sólo reacciona a lecturas de signals. Para reaccionar a cambios de formulario se puede usar `valueChanges` o `events`, o consultar el estado directamente en la guarda.
+- **¿Qué diferencia hay entre `canActivate` y `canDeactivate`, y qué no cubre la guarda de salida?** `canActivate` decide si se entra a una ruta; `canDeactivate` decide si se abandona el componente actual. Esta última no intercepta el cierre de pestaña, recarga del navegador, caída del proceso ni navegación fuera del router de Angular.
 
-- Un `signal` contiene estado modificable y se parece aproximadamente a `useState`; `computed` deriva un valor de otros signals y se parece aproximadamente a `useMemo`.
-- `inject(Catalogo)` obtiene la instancia compartida del inyector. `new Catalogo()` crearía una instancia aparte con estado distinto y fuera del ciclo de vida de inyección de Angular.
-- `clase()` lee el valor actual de un input signal. En `@for`, `track clase.id` da una identidad estable para que Angular relacione los elementos con sus tarjetas.
+## Prácticas anteriores
 
-## Errores capturados en la Práctica 20
-
-Las salidas reales de compilación se conservan en `evidencias/NG5002.txt`, `evidencias/NG8001.txt` y `evidencias/NG8109.txt`. Cada error se provocó temporalmente y luego se corrigió.
+El tablero y el catálogo remoto de la Práctica 21 siguen en `/clases`; `GET /clases` sigue siendo público. Las explicaciones de signals, router y formulario de las prácticas anteriores se conservan en el historial de ramas.

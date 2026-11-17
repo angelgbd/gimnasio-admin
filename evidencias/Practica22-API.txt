@@ -1,0 +1,19 @@
+Práctica 22 · respuestas observadas en la API local
+
+GET /clases: 200, 8 clases iniciales.
+POST /auth/login: admin@itson.mx -> rol admin; karla@itson.mx -> rol miembro.
+
+Demostración temporal del POST público:
+1. Se cambió @Roles(Rol.admin) por @Publico() en crear().
+2. POST /clases sin token -> 201; clase creada: id 9, "Practica 22 - Clase de demostracion".
+3. Se restauró @Roles(Rol.admin) antes de continuar.
+
+Comprobaciones con @Roles(Rol.admin) restaurado:
+- POST /clases sin token -> 401, {"message":"Unauthorized","statusCode":401}.
+- POST /clases con token de Karla -> 403, requiere el rol admin.
+- POST /clases con token admin y nombre vacío/duración 5 -> 400:
+  - El nombre es obligatorio
+  - La duración mínima es de 10 minutos
+- CRUD temporal con token admin -> POST 201, PATCH 200, DELETE 200; el registro temporal se borró.
+
+Los JWT no se guardaron en este archivo. El POST público temporal ya está cerrado en el código.

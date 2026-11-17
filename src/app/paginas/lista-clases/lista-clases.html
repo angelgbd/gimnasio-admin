@@ -68,6 +68,9 @@
             <span class="dato__clave">Duración</span>
             <span class="dato__valor">{{ clase.duracionMin }} minutos</span>
           </p>
+          <a class="boton boton--chico" [routerLink]="['/clases', clase.id, 'editar']">
+            Editar
+          </a>
           <button
             class="boton boton--secundario boton--chico"
             type="button"
