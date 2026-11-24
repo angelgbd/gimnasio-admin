@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { API_URL } from '../config';
 import type { Clase, ClaseConHorarios, ClaseNueva, Sobre } from '../modelos/clase';
@@ -6,6 +6,11 @@ import type { Clase, ClaseConHorarios, ClaseNueva, Sobre } from '../modelos/clas
 @Service()
 export class ClasesApi {
   private readonly http = inject(HttpClient);
+
+  buscarPorNombre(q: string) {
+    const params = new HttpParams().set('q', q);
+    return this.http.get<Sobre<Clase[]>>(`${API_URL}/clases`, { params });
+  }
 
   crear(clase: ClaseNueva) {
     return this.http.post<Sobre<Clase>>(`${API_URL}/clases`, clase);

@@ -1,6 +1,6 @@
-# Gimnasio Admin — Práctica 22
+# Gimnasio Admin — Práctica 23
 
-Continuación de las Prácticas 19 a 21. El panel usa una sesión de administrador, agrega el token a las peticiones y guarda, edita y elimina clases con la API.
+Continuación de las Prácticas 19 a 22. El panel usa una sesión de administrador y busca clases por nombre con RxJS; cada término nuevo cancela la petición de búsqueda anterior.
 
 ## Ejecutar
 
@@ -45,6 +45,20 @@ Los validadores del navegador dan respuesta inmediata; si el backend responde 40
 Para observar la validación del backend, quita temporalmente `Validators.required` del nombre y `Validators.min(10)` junto con `multiploDeCincoValidator` de la duración en `formulario-clase.ts`. Envía nombre vacío y duración `5`: deben aparecer los mensajes 400 del servidor. Después vuelve a poner los validadores antes de guardar los cambios finales.
 
 Para demostrar el límite de autorización, cambia temporalmente `@Roles(Rol.admin)` por `@Publico()` en el método `crear()` de `gimnasio-backend/src/clases/clases.controller.ts`, crea una clase desde el formulario y vuelve a poner `@Roles(Rol.admin)`. Un `POST /clases` sin token debe responder 401. No dejes la ruta pública al terminar.
+
+## Búsqueda reactiva (Práctica 23)
+
+`ClasesApi.buscarPorNombre(q)` consulta `GET /clases?q=...`. `Catalogo` mantiene el término en un `BehaviorSubject`, usa `switchMap` para cambiar a la petición más nueva, convierte la respuesta con `toSignal` y conserva `recargar()` para repetir el término actual después de guardar o borrar. La caja usa un `FormControl`; `debounceTime(350)`, `distinctUntilChanged()` y `takeUntilDestroyed()` evitan consultas por cada tecla, términos repetidos y suscripciones que queden vivas al salir de la página. Los errores de una petición se convierten en estado con `catchError`, por lo que una búsqueda posterior todavía puede funcionar.
+
+### Ver las peticiones canceladas
+
+En `gimnasio-backend/.env`, activa `RETARDO_MS=600` y reinicia la API. Abre las herramientas de desarrollo del navegador, pestaña **Red** (Network), y filtra por `clases`. En la caja, escribe parte de una palabra, espera unos 400 ms para que salga la primera petición y cambia el texto antes de que pasen los 600 ms de respuesta. La fila anterior debe aparecer cancelada; la última búsqueda devuelve los resultados. `RETARDO_MS` también demora el login y las demás respuestas, así que se puede quitar del `.env` al terminar la práctica.
+
+### Respuestas de la Práctica 23
+
+- **¿Qué diferencia hay entre un signal y un Observable?** Un signal conserva un valor actual que se lee directamente y notifica a `computed()` y a la vista cuando cambia. Un Observable representa valores que pueden llegar a lo largo del tiempo; se transforma con operadores y una suscripción puede cancelarse. `toSignal()` adapta el Observable del catálogo para consumir su estado en Angular.
+- **¿Qué problema evita `switchMap` y qué pasaría con `mergeMap`?** `switchMap` cancela la petición anterior cuando llega un término nuevo, evitando que una respuesta lenta y vieja reemplace los resultados recientes. `mergeMap` dejaría todas las peticiones activas; podrían responder fuera de orden y mostrar resultados que ya no corresponden al texto.
+- **¿Qué pasa si se quita `catchError` y la API se apaga?** El Observable de la petición falla y `toSignal` vuelve a lanzar ese error cuando se lee su valor. Además, el flujo de búsquedas termina; escribir otro término no lo recupera. Con `catchError` dentro del `switchMap`, se presenta el error de esa petición y el `BehaviorSubject` puede iniciar búsquedas nuevas.
 
 ## Respuestas de la Práctica 22
 

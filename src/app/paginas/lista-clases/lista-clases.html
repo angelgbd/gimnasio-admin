@@ -35,11 +35,25 @@
 
       <app-filtro-categoria></app-filtro-categoria>
 
-      @if (catalogo.recursoClases.isLoading()) {
-        <p class="cargando" role="status">Cargando catálogo…</p>
-      } @else if (catalogo.recursoClases.error(); as error) {
+      <div class="buscador">
+        <label for="buscar-clase">Buscar clase por nombre</label>
+        <input
+          id="buscar-clase"
+          type="search"
+          [formControl]="busqueda"
+          placeholder="Ej. yoga"
+          autocomplete="off"
+        />
+        <span class="buscador__estado" role="status" aria-live="polite">
+          {{ catalogo.cargando() ? 'Buscando…' : '' }}
+        </span>
+      </div>
+
+      @if (catalogo.cargando()) {
+        <p class="cargando" role="status">Buscando clases…</p>
+      } @else if (catalogo.error(); as error) {
         <p class="aviso aviso--error" role="alert">{{ mensajeDeApi(error) }}</p>
-      } @else if (catalogo.recursoClases.hasValue()) {
+      } @else {
         <div class="rejilla" aria-label="Clases disponibles">
           @for (clase of catalogo.clasesVisibles(); track clase.id) {
             <app-tarjeta-clase
@@ -48,7 +62,7 @@
               (seleccionada)="catalogo.seleccionarClase($event)"
             ></app-tarjeta-clase>
           } @empty {
-            <p class="vacio" role="status">No hay clases en esta categoría.</p>
+            <p class="vacio" role="status">No se encontraron clases con ese nombre y categoría.</p>
           }
         </div>
       }
