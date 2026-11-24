@@ -13,9 +13,8 @@ Preguntas del ejercicio
 
 Errores capturados
 
-Los archivos de evidencias/ guardan la salida real de ng build al provocar cada error de forma momentanea.
 
-- NG5002: un bloque @if sin su llave de cierre.
-- NG8001: un selector de componente desconocido que no está en imports del componente raíz.
+NG5002: un bloque @if sin su llave de cierre.
+NG8001: un selector de componente desconocido que no está en imports del componente raíz.
 
 
